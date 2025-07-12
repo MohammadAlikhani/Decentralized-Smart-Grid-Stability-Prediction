@@ -25,13 +25,17 @@ Smart grids are evolving from unidirectional energy delivery to **bidirectional 
 Monitoring grid **frequency** is key: excess generation raises frequency; shortages lower it. The DSGC framework links **real-time pricing** to local frequency measurements, but the original differential-equation model relies on simplifying assumptions (“fixed-inputs” & “equality” issues).  
 We replace that fragile analytical model with data-driven predictors.
 
-![4-node DSGC ](IMG/2.png)
+<!-- Centered, 260-px wide -->
+<p align="center">
+  <img src="./IMG/2.png" width="290" alt="4-node DSGC "><br>
+  Figure&nbsp;1&nbsp;&mdash;4-node DSGC
+</p>
 
 ---
 
 ## ⚙️ DSGC Mathematical Model
 
-Core power-balance (producer / consumer $j$):
+#### Core power-balance (producer / consumer $j$), follows the equations below:
 
 $$
 p^{\text{source}} = p^{\text{accumulated}} + p^{\text{loss}} + p^{\text{consumed}}
@@ -42,24 +46,34 @@ p^{\text{source}}
   = \tfrac12\ M_j \ \frac{d}{dt}\bigl(\delta_j'\bigr)^{2} + \kappa_j \sum_{k=1}^{N} K^{\max}_{jk} sin(\delta_k-\delta_j)
 $$
 
-Phase dynamics (**synchronous machine**; eq 3 in the paper):
+**where:**
+
+- $$M_j$$ — moment of inertia  
+- $$\delta_j'$$ — rotor angle velocity  
+- $$K_j$$ — friction coefficient  
+- $$K^{\max}_{jk}$$ — maximum transmittable power  
+- $$\delta_j, \delta_K$$ — rotor angles of machines *j* and *k*
+
+
+#### Frequency and Phase dynamics:
+
+- Grid frequency deviation is defined as $$\omega_j = \frac{d}{dt} \delta_j$$, from a reference grid rotating at $$\Omega = 2\pi \cdot 50 \, \text{Hz},$$  with the phase given by $$\delta_j(t) = \omega t + \theta_j(t),$$ where $$\omega$$ is the grid frequency and $$\theta_j(t)$$ is the relative rotor angle.
 
 $$
-\frac{d^{2}\delta_j}{dt^{2}}
-  = P_j
-  - \alpha_j\frac{d\delta_j}{dt}
-  + \sum_{k=1}^{N} K_{jk}\sin(\delta_k-\delta_j)
+\frac{d^{2}\delta_j}{dt^{2}} = P_j - \alpha_j\frac{d\delta_j}{dt} + \sum_{k=1}^{N} K_{jk}\sin(\delta_k-\delta_j)
 $$
 
-With reaction-time delay $\tau_j$ and price elasticity $\gamma_j$ the full model becomes (eq 4):
+**where:**
+
+- $$P_j$$ — mechanical power (positive for production, negative for consumption)  
+- $$\alpha_j = \frac{2\kappa_j}{M_j}$$ — damping factor  
+- $$K_{jk}$$ — coupling strength
+
+With reaction-time delay $$\tau_j$$ and price elasticity $$\gamma_j$$ the full model becomes:
+
 
 $$
-\frac{d^{2}\delta_j}{dt^{2}}
-  = P_j
-  - \alpha_j\dot{\delta}_j
-  + \sum_{k}K_{jk}\sin(\theta_k-\theta_j)
-  \;-\;
-  \gamma_j\,\frac{d}{dt}\bigl[\theta_j(t-\tau_j)-\theta_j(t-\tau_j-T_j)\bigr].
+\frac{d^{2}\delta_j}{dt^{2}} = P_j - \alpha_j\frac{d\delta_j}{dt} + \sum_{k}K_{jk}\sin(\theta_k-\theta_j) - \gamma_j\\frac{d}{dt}\bigl[\theta_j(t-\tau_j)-\theta_j(t-\tau_j-T_j)\bigr].
 $$
 
 A negative maximum eigenvalue of the Jacobian ⇒ **stable** grid.
@@ -81,11 +95,18 @@ A negative maximum eigenvalue of the Jacobian ⇒ **stable** grid.
 
 ## 🔍 Exploratory Data Analysis
 
-* Key class imbalance: **64 % unstable**.  
-* Strong negative correlation ($-0.83$) between feature magnitude and stability.  
-* No two features were colinear enough to remove.  
+**Correlation Analysis**: 
+The examination identified a significant negative correlation (**–0.83**) between the target variable `'stabf'` and the twelve numerical features, suggesting that higher feature values are associated with unstable conditions.  
+Moreover, above-average correlations were noted between `'p1'` and its components `'p2'`, `'p3'`, and `'p4'`.  
+Despite these correlations, the values were not high enough to justify feature removal, as each feature provides unique insights crucial for understanding the dataset’s structure.
+  
 
-![Correlation matrix](./img/cov.png)
+
+<!-- Centered, 260-px wide -->
+<p align="center">
+  <img src="./IMG/cov.png" width="310" alt="4-node DSGC "><br>
+  Figure&nbsp;1&nbsp;&mdash;correlation matrix
+</p>
 
 ---
 
@@ -115,32 +136,24 @@ RandomizedGridSearch ⟶ best hyper-set per model.
 | XGBoost | 93.8 | 93.6 |
 | ANN | **94.6** | **94.4** |
 
-*ANN confusion matrix*  
-![ANN Confusion](./img/32.png)
+<table>
+  <tr>
+    <td align="center">
+      <img src="./IMG/11.png" width="250"/><br>
+      <em>Figure 1 — DSGC topology</em>
+    </td>
+    <td align="center">
+      <img src="./IMG/12.png" width="250"/><br>
+      <em>Figure 2 — Grid dynamics</em>
+    </td>
+  </tr>
+</table>
+
+
 
 ---
 
-## 📈 Sample Figures
 
-| Caption | Image |
-|---------|-------|
-| 4-node star DSGC topology | ![Star grid](./img/1.png) |
-| Correlation matrix | ![Corr](./img/cov.png) |
-| Param-sweep: XGB depth × η | ![Heat](./img/21.png) |
-| ANN learning curves | ![ANN curve](./img/31.png) |
-
----
-
-## ▶️ How to Run
-
-```bash
-# clone
-git clone https://github.com/your-username/dsgc-stability.git
-cd dsgc-stability
-
-# create env
-conda env create -f environment.yml
-conda activate dsgc
 
 # reproduce ANN experiment
 python src/train_ann.py --epochs 50 --batch 32
