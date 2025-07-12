@@ -139,24 +139,60 @@ RandomizedGridSearch ⟶ best hyper-set per model.
 <table>
   <tr>
     <td align="center">
-      <img src="./IMG/11.png" width="250"/><br>
-      <em>Figure 1 — DSGC topology</em>
+      <img src="./IMG/11.png" width="300"/><br>
+      <em>Figure 3 — Linear SVM</em>
     </td>
     <td align="center">
-      <img src="./IMG/12.png" width="250"/><br>
-      <em>Figure 2 — Grid dynamics</em>
+      <img src="./IMG/12.png" width="300"/><br>
+      <em>Figure 4 — RBF SVM</em>
+    </td>
+    <td align="center">
+      <img src="./IMG/13.png" width="300"/><br>
+      <em>Figure 5 — Polynomial SVM</em>
     </td>
   </tr>
 </table>
 
+<table>
+  <tr>
+    <td align="center">
+      <img src="./IMG/23.png" width="300"/><br>
+      <em>Figure 6 — Learning Rate Vs CV Accuracy for XGboost Model</em>
+    </td>
+    <td align="center">
+      <img src="./IMG/24.png" width="300"/><br>
+      <em>Figure 7 — N estimator Vs CV Accuracy for XGboost Model </em>
+    </td>
+    <td align="center">
+      <img src="./IMG/25.png" width="300"/><br>
+      <em>Figure 8 — Confiusion Matrix for XGboost Model </em>
+    </td>
+  </tr>
+</table>
 
+<table>
+  <tr>
+    <td align="center">
+      <img src="./IMG/31.png" width="500"/><br>
+      <em>Figure 9 — ANN Accuracy & Loss over epochs </em>
+    </td>
+    <td align="center">
+      <img src="./IMG/32.png" width="350"/><br>
+      <em>Figure 10 — Confiusion Matrix for ANN Model </em>
+    </td>
+
+</table>
 
 ---
 
 
+# 🧠 Discussion & Recommendations
 
-# reproduce ANN experiment
-python src/train_ann.py --epochs 50 --batch 32
+The selected architecture — four hidden layers with decreasing width and Nadam optimization — effectively models grid stability with strong accuracy and balanced precision–recall.  
+A slight training–validation loss gap suggests that applying **early stopping** or **weight decay** may reduce overfitting.  
 
-# evaluate all models
-python src/evaluate_all.py --saved_models models/
+Importantly, **false negatives** (unstable conditions classified as stable) impact the model more than false positives.  
+Thus, boosting **recall for the unstable class**, even at some precision cost, may be beneficial.  
+Future work should explore **dropout tuning** and **class-weighted loss functions** to enhance recall.
+
+
