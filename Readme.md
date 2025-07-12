@@ -25,6 +25,8 @@ Smart grids are evolving from unidirectional energy delivery to **bidirectional 
 Monitoring grid **frequency** is key: excess generation raises frequency; shortages lower it. The DSGC framework links **real-time pricing** to local frequency measurements, but the original differential-equation model relies on simplifying assumptions (“fixed-inputs” & “equality” issues).  
 We replace that fragile analytical model with data-driven predictors.
 
+![4-node DSGC ](IMG/2.png)
+
 ---
 
 ## ⚙️ DSGC Mathematical Model
@@ -32,8 +34,12 @@ We replace that fragile analytical model with data-driven predictors.
 Core power-balance (producer / consumer $j$):
 
 $$
-p^{\text{source}} = \tfrac12 M_j \,\frac{d}{dt}(\delta'_j)^2
-                 + \kappa_j \sum_{k=1}^{N} K^{\max}_{jk}\sin(\delta_k-\delta_j)
+p^{\text{source}} = p^{\text{accumulated}} + p^{\text{loss}} + p^{\text{consumed}}
+$$
+
+$$
+p^{\text{source}}
+  = \tfrac12\ M_j \ \frac{d}{dt}\bigl(\delta_j'\bigr)^{2} + \kappa_j \sum_{k=1}^{N} K^{\max}_{jk} sin(\delta_k-\delta_j)
 $$
 
 Phase dynamics (**synchronous machine**; eq 3 in the paper):
