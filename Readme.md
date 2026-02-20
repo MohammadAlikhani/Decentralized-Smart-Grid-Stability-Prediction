@@ -1,7 +1,7 @@
 # ⚡ Decentralized Smart Grid Stability Prediction
 
 > Pattern Recognition & Machine Learning — Universitat Politècnica de Catalunya  
-> Author · Marco Alikhani Najafabadi 
+> Author · Mohammad Alikhani Najafabadi 
 
 This repository contains code, data, and experiments for predicting stability in a **Decentral Smart Grid Control (DSGC)** system using machine-learning and deep-learning models (SVM, Gradient Boosting, and Artificial Neural Networks).  
 Our best model (ANN) reaches **94 % accuracy** on a 60 k-sample dataset derived from 4-node DSGC simulations.
